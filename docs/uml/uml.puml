@@ -1,33 +1,73 @@
+
 @startuml
-class Product {
-- id : Long
-- name : String
-- price : double
-+ getId() : Long
-+ getName() : String
-+ getPrice() : double
-+ setId(id : Long) : void
-+ setName(name : String) : void
-+ setPrice(price : double) : void
+
+abstract class Product {
+    - id : Long
+    - name : String
+    - price : double
+    + getId() : Long
+    + getName() : String
+    + getPrice() : double
+    + setId(id : Long) : void
+    + setName(name : String) : void
+    + setPrice(price : double) : void
+    + getSummary() : String
 }
+
+class DigitalProduct {
+    - downloadUrl : String
+    - fileSizeMB : double
+    - discountedPrice : double
+    + getDownloadUrl() : String
+    + getFileSizeMB() : double
+    + getSummary() : String
+    + applyDiscount(rate : double) : void
+    + getDiscountedPrice() : double
+}
+
+class PhysicalProduct {
+    - weightKg : double
+    - dimensions : String
+    - discountedPrice : double
+    + getWeightKg() : double
+    + getDimensions() : String
+    + getSummary() : String
+    + applyDiscount(rate : double) : void
+    + getDiscountedPrice() : double
+}
+
+interface Discountable {
+    + applyDiscount(rate : double) : void
+    + getDiscountedPrice() : double
+}
+
 class ProductService {
-- products : List<Product>
-- nextId : Long
-+ getAllProducts() : List<Product>
-+ getProductById(id : Long) : Optional<Product>
-+ addProduct(product : Product) : Product
-+ deleteProduct(id : Long) : void
-+ findByName(name : String) : List<Product>
+    - products : List<Product>
+    - nextId : Long
+    + getAllProducts() : List<Product>
+    + getProductById(id : Long) : Optional<Product>
+    + addProduct(product : Product) : Product
+    + deleteProduct(id : Long) : void
+    + findByName(name : String) : List<Product>
+    + getAllSummaries() : List<String>
 }
+
 class ProductController {
-- productService : ProductService
-+ getAllProducts() : List<Product>
-+ getProductById(id : Long) : Product
-+ addProduct(product : Product) : Product
-+ deleteProduct(id : Long) : void
+    - productService : ProductService
+    + getAllProducts() : List<Product>
+    + getProductById(id : Long) : Product
+    + addProduct(product : DigitalProduct) : Product
+    + deleteProduct(id : Long) : void
+    + getSummaries() : List<String>
 }
-' ..> is a dependency: DASHED line, open arrow
+
+Product <|-- DigitalProduct
+Product <|-- PhysicalProduct
+
+Discountable <|.. DigitalProduct
+Discountable <|.. PhysicalProduct
+
 ProductController ..> ProductService
-' --> is an association: SOLID line
 ProductService --> Product
+
 @enduml
